@@ -1,0 +1,19 @@
+language: cpp
+
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+      compiler: clang
+    - os: osx
+      osx_image: xcode11.2
+      compiler: clang
+    - os: windows
+
+script:
+  - mkdir build
+  - cd build
+  - cmake .. -DCMAKE_BUILD_TYPE=Release
+  - cmake --build .
+  - cmake --build . --target test
+
