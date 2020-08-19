@@ -13,8 +13,27 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
         -fno-rtti)
 endif()
 
-add_executable(monster_hub
-    src/main.cpp)
+include(../cmake/build_options.cmake)
+
+include_directories(src)
+
+set(SRC_FILES
+    src/io/filesystem.cpp
+    src/logging/logger.cpp
+    src/main.cpp
+    src/util/unreachable.cpp)
+
+if(WIN32)
+    list(APPEND SRC_FILES
+        src/windows.cpp)
+elseif(UNIX)
+    list(APPEND SRC_FILES
+        src/unix.cpp)
+else()
+    message(FATAL_ERROR "Unsupported target platform")
+endif()
+
+add_executable(monster_hub ${SRC_FILES})
 
 add_custom_target(run monster_hub
     DEPENDS monster_hub)

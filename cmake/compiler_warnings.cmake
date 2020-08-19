@@ -36,6 +36,8 @@ if(MSVC)
         /w14928      # illegal copy-initialization; more than one user-defined
                      # conversion has been implicitly applied
         /permissive- # standard conformance mode for MSVC compiler
+        /wd4996      # 'identifier': This function or variable may be unsafe.
+                     # Consider using 'identifier' instead.
     )
 
     if(WARNINGS_AS_ERRORS)
@@ -61,8 +63,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR
         -Wsign-conversion    # warn on sign conversions
         -Wnull-dereference   # warn if a null dereference is detected
         -Wdouble-promotion   # warn if float is implicit promoted to double
-        -Wformat=2           # warn on security issues around functions that
-                             # format output
     )
 
     if(WARNINGS_AS_ERRORS)
