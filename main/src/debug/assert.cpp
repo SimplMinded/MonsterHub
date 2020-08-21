@@ -13,7 +13,7 @@ void assert_impl(
     if (exprValue) return;
 
     char buffer[256] = {};
-    snprintf(buffer, 256, "[ASSERT] %s:%lu: %s\n", file, line, expr);
+    snprintf(buffer, 256, "[ASSERT] %s:%llu: %s\n", file, line, expr);
     printToTerminal(buffer);
 
     abort();

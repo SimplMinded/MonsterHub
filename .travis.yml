@@ -4,6 +4,12 @@ jobs:
   include:
     - os: linux
       dist: bionic
+      before-install:
+        - sudo apt-get update
+        - sudo apt-get -y install libxrandr-dev
+        - sudo apt-get -y install libxinerama-dev
+        - sudo apt-get -y install libxcursor-dev
+        - sudo apt-get -y install libxi-dev
       compiler: clang
     - os: osx
       osx_image: xcode11.2

@@ -63,6 +63,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR
         -Wsign-conversion    # warn on sign conversions
         -Wnull-dereference   # warn if a null dereference is detected
         -Wdouble-promotion   # warn if float is implicit promoted to double
+        -Wno-format
     )
 
     if(WARNINGS_AS_ERRORS)
