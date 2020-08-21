@@ -1,28 +1,23 @@
-#include <cstdio>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
-#include "io/filesystem.h"
-#include "io/terminal.h"
-#include "logging/logger.h"
+#include "window.h"
 
-int main(int, char* argv[])
+using namespace monster_hub;
+
+int main()
 {
-    char buffer[128] = {};
-    monster_hub::dirname(buffer, 128, argv[0]);
-    monster_hub::chdir(buffer);
+    createWindow(640, 480, "Hello World");
 
-    char terminalBuffer[256] = {};
-    snprintf(terminalBuffer, 256, "dirname=%s\n", buffer);
-    monster_hub::printToTerminal(terminalBuffer);
-
-    INIT_LOG();
-
-    LOG(monster_hub::LEVEL_INFO, monster_hub::CHANNEL_DEBUG,
-        "Hello, %s!", "World");
-
-    for (int i = 1; i < 11; ++i)
+    while (!isWindowClosed())
     {
-        LOG(monster_hub::LEVEL_DEBUG, monster_hub::CHANNEL_DEBUG,
-            "Log message %d", i);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        swapBuffers();
+
+        glfwPollEvents();
     }
+
+    destroyWindow();
 }
 

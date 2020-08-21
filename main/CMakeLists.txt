@@ -18,10 +18,12 @@ include(../cmake/build_options.cmake)
 include_directories(src)
 
 set(SRC_FILES
+    src/debug/assert.cpp
     src/io/filesystem.cpp
     src/logging/logger.cpp
     src/main.cpp
-    src/util/unreachable.cpp)
+    src/util/unreachable.cpp
+    src/window.cpp)
 
 if(WIN32)
     list(APPEND SRC_FILES
@@ -34,6 +36,8 @@ else()
 endif()
 
 add_executable(monster_hub ${SRC_FILES})
+target_link_libraries(monster_hub
+    PRIVATE glad glfw)
 
 add_custom_target(run monster_hub
     DEPENDS monster_hub)

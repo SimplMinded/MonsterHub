@@ -30,3 +30,7 @@ add_compile_switch(
 add_compile_switch(
     DEBUG_OPTION_LOG_TO_FILE_ENABLED "Enable logging to file" ON)
 
+add_compile_switch(
+    DEBUG_FEATURE_ASSERT_ENABLED "Enable asserts" ON
+    "Release")
+
