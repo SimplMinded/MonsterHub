@@ -10,6 +10,7 @@ bool dirname(char* result, size_t resultSize, const char* path)
     size_t dirnameSize = static_cast<size_t>(ptr - path);
     if (resultSize <= dirnameSize) return false;
     memcpy(result, path, dirnameSize);
+    result[dirnameSize] = '\0';
     return true;
 }
 

@@ -18,7 +18,7 @@ enum SeverityLevel
 
 enum LogChannel
 {
-    CHANNEL_DEBUG,
+    CHANNEL_RENDERING,
     CHANNEL_COUNT
 };
 
@@ -34,8 +34,7 @@ void log(
         const char*   formatMsg,
         ...);
 
-#define LOG(...) \
-    monster_hub::log(__VA_ARGS__)
+#define LOG(...) monster_hub::log(__VA_ARGS__)
 
 #else
 
@@ -43,6 +42,11 @@ void log(
 #define LOG(...)
 
 #endif
+
+#define LOG_INFO_IMPL(...) LOG(monster_hub::LEVEL_INFO, __VA_ARGS__)
+#define LOG_WARNING_IMPL(...) LOG(monster_hub::LEVEL_WARNING, __VA_ARGS__)
+#define LOG_ERROR_IMPL(...) LOG(monster_hub::LEVEL_ERROR, __VA_ARGS__)
+#define LOG_DEBUG_IMPL(...) LOG(monster_hub::LEVEL_DEBUG, __VA_ARGS__)
 
 } // monster_hub
 

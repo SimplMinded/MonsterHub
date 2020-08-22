@@ -26,7 +26,7 @@ constexpr const char* toString(LogChannel channel)
 {
     switch (channel)
     {
-        case CHANNEL_DEBUG: return "DEBUG";
+        case CHANNEL_RENDERING: return "RENDERING";
         default: unreachable("unknown log channel");
     }
 }
@@ -37,7 +37,7 @@ constexpr const char* fileName(LogChannel channel)
 {
     switch (channel)
     {
-        case CHANNEL_DEBUG: return "logs/debug.log";
+        case CHANNEL_RENDERING: return "logs/rendering.log";
         default: unreachable("Unknown log channel");
     }
 }

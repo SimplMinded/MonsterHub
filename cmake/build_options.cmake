@@ -34,3 +34,11 @@ add_compile_switch(
     DEBUG_FEATURE_ASSERT_ENABLED "Enable asserts" ON
     "Release")
 
+add_compile_switch(
+    DEBUG_FEATURE_GL_ASSERT_ENABLED "Enable OpenGL asserts" ON
+    "Release")
+
+add_compile_switch(
+    DEBUG_FEATURE_SHADER_VERIFICATION_ENABLED "Enable shader verification" ON
+    "Release")
+

@@ -22,6 +22,8 @@ set(SRC_FILES
     src/io/filesystem.cpp
     src/logging/logger.cpp
     src/main.cpp
+    src/rendering/projection.cpp
+    src/rendering/renderer.cpp
     src/util/unreachable.cpp
     src/window.cpp)
 
