@@ -1,12 +1,13 @@
 #include "rendering/renderer.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 #include "debug/assert.h"
+#include "input.h"
 #include "rendering/logger.h"
 #include "util/unreachable.h"
 #include "window.h"
@@ -269,7 +270,7 @@ void endRendering()
     GL_ASSERT( glDrawElements(GL_TRIANGLES, spriteCount * 6, GL_UNSIGNED_INT, 0) );
 
     swapBuffers();
-    glfwPollEvents();
+    updateInput();
 }
 
 void pushQuad(float x, float y, float width, float height,

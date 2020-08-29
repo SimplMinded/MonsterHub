@@ -1,3 +1,4 @@
+#include "input.h"
 #include "io/filesystem.h"
 #include "logging/logger.h"
 #include "rendering/projection.h"
@@ -22,11 +23,13 @@ int main(int, char* argv[])
     initRenderer();
     setProjection(projection);
 
-
     while (!isWindowClosed())
     {
         beginRendering();
-        pushQuad(160, 120, 320, 240, 1, 0, 0, 1);
+        if (isKeyDown(KEY_SPACE))
+            pushQuad(160, 120, 320, 240, 1, 0, 0, 1);
+        else
+            pushQuad(160, 120, 320, 240, 0, 0, 1, 1);
         endRendering();
     }
 
