@@ -112,5 +112,13 @@ enum Key : uint32_t
     KEY_COUNT
 };
 
+enum Button : uint32_t
+{
+    BUTTON_LEFT,
+    BUTTON_RIGHT,
+    BUTTON_MIDDLE,
+    BUTTON_COUNT
+};
+
 } // namespace monster_hub
 

@@ -37,6 +37,7 @@ bool createWindow(int32_t width, int32_t height, const char* title)
     {}
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
     return true;
 }
@@ -279,10 +280,26 @@ int toGlfwKey(uint32_t key)
     }
 }
 
+int toGlfwButton(uint32_t button)
+{
+    switch (button)
+    {
+        case BUTTON_LEFT:
+            return GLFW_MOUSE_BUTTON_LEFT;
+        case BUTTON_RIGHT:
+            return GLFW_MOUSE_BUTTON_RIGHT;
+        case BUTTON_MIDDLE:
+            return GLFW_MOUSE_BUTTON_MIDDLE;
+        default:
+            unreachable("Unknown button");
+    }
+}
+
 constexpr uint8_t current_state_bit = (1 << 0);
 constexpr uint8_t previous_state_bit = (1 << 1);
 
 uint8_t keyState[KEY_COUNT] = {};
+uint8_t buttonState[BUTTON_COUNT] = {};
 
 } // namespace
 
@@ -294,7 +311,14 @@ void updateInput()
     for (uint32_t i = 0; i < KEY_COUNT; ++i)
     {
         keyState[i] = ((keyState[i] << 1) & previous_state_bit);
-        keyState[i] |= static_cast<uint8_t>(glfwGetKey(window, toGlfwKey(i)) == GLFW_PRESS);
+        keyState[i] |= static_cast<uint8_t>(
+                glfwGetKey(window, toGlfwKey(i)) == GLFW_PRESS);
+    }
+    for (uint32_t i = 0; i < BUTTON_COUNT; ++i)
+    {
+        buttonState[i] = ((buttonState[i] << 1) & previous_state_bit);
+        buttonState[i] |= static_cast<uint8_t>(
+                glfwGetMouseButton(window, toGlfwButton(i)) == GLFW_PRESS);
     }
 }
 
@@ -324,6 +348,47 @@ bool isKeyReleased(Key key)
     assert(key != KEY_COUNT);
 
     return isKeyUp(key) && (keyState[key] & previous_state_bit);
+}
+
+void getCursorPos(float& x, float& y)
+{
+    assert(window != nullptr);
+
+    double posX, posY;
+    glfwGetCursorPos(window, &posX, &posY);
+
+    x = static_cast<float>(posX);
+    y = static_cast<float>(posY);
+}
+
+bool isMouseButtonDown(Button button)
+{
+    assert(button != BUTTON_COUNT);
+
+    return buttonState[button] & current_state_bit;
+}
+
+bool isMouseButtonUp(Button button)
+{
+    assert(button != BUTTON_COUNT);
+
+    return !isMouseButtonDown(button);
+}
+
+bool isMouseButtonPressed(Button button)
+{
+    assert(button != BUTTON_COUNT);
+
+    return isMouseButtonDown(button) &&
+        !(buttonState[button] & previous_state_bit);
+}
+
+bool isMouseButtonReleased(Button button)
+{
+    assert(button != BUTTON_COUNT);
+
+    return isMouseButtonUp(button) && 
+        (buttonState[button] & previous_state_bit);
 }
 
 } // namespace monster_hub

@@ -23,10 +23,13 @@ int main(int, char* argv[])
     initRenderer();
     setProjection(projection);
 
+    float mouseX, mouseY;
     while (!isWindowClosed())
     {
+        getCursorPos(mouseX, mouseY);
+
         beginRendering();
-        if (isKeyDown(KEY_SPACE))
+        if (isMouseButtonDown(BUTTON_LEFT) && mouseX >= 160 && mouseX <= 480 && mouseY >= 120 && mouseY <= 360)
             pushQuad(160, 120, 320, 240, 1, 0, 0, 1);
         else
             pushQuad(160, 120, 320, 240, 0, 0, 1, 1);
