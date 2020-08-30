@@ -1,31 +1,20 @@
 #include "rendering/projection.h"
 
+#include "math/matrix.h"
+
 namespace monster_hub {
 
-void orthogonalProjection(float* result,
+Matrix orthogonalProjection(
         float left, float right,
         float bottom, float top,
         float near, float far)
 {
-    result[0] = 2 / (right - left);
-    result[1] = 0;
-    result[2] = 0;
-    result[3] = 0;
-
-    result[4] = 0;
-    result[5] = 2 / (top - bottom);
-    result[6] = 0;
-    result[7] = 0;
-    
-    result[8] = 0;
-    result[9] = 0;
-    result[10] = 2 / (near - far);
-    result[11] = 0;
-
-    result[12] = (left + right) / (left - right);
-    result[13] = (bottom + top) / (bottom - top);
-    result[14] = (near + far) / (near - far);
-    result[15] = 1;
+    return {
+        2 / (right - left),              0,                               0,                           0,
+        0,                               2 / (top - bottom),              0,                           0,
+        0,                               0,                               2 / (near - far),            0,
+        (left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1
+    };
 }
 
 } // namespace monster_hub

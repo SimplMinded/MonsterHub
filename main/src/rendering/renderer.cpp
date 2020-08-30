@@ -8,6 +8,7 @@
 
 #include "debug/assert.h"
 #include "input.h"
+#include "math/matrix.h"
 #include "rendering/logger.h"
 #include "util/unreachable.h"
 #include "window.h"
@@ -251,10 +252,10 @@ void destroyRenderer()
     GL_ASSERT( glDeleteVertexArrays(1, &vao) );
 }
 
-void setProjection(const float* projection)
+void setProjection(const Matrix& projection)
 {
     GL_ASSERT( int32_t location = glGetUniformLocation(program, "u_projection") );
-    GL_ASSERT( glUniformMatrix4fv(location, 1, false, projection) );
+    GL_ASSERT( glUniformMatrix4fv(location, 1, false, projection.elems) );
 }
 
 void beginRendering()

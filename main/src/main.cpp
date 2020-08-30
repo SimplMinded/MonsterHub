@@ -1,6 +1,7 @@
 #include "input.h"
 #include "io/filesystem.h"
 #include "logging/logger.h"
+#include "math/matrix.h"
 #include "math/vec2.h"
 #include "rendering/projection.h"
 #include "rendering/renderer.h"
@@ -18,8 +19,7 @@ int main(int, char* argv[])
 
     createWindow(640, 480, "Hello World");
 
-    float projection[16] = {};
-    orthogonalProjection(projection, 0, 640, 0, 480, -1, 1);
+    Matrix projection = orthogonalProjection(0, 640, 0, 480, -1, 1);
 
     initRenderer();
     setProjection(projection);

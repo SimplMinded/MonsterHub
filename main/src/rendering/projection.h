@@ -2,7 +2,9 @@
 
 namespace monster_hub {
 
-void orthogonalProjection(float* result,
+struct Matrix;
+
+Matrix orthogonalProjection(
         float left, float right,
         float bottom, float top,
         float near, float far);

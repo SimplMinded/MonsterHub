@@ -2,10 +2,12 @@
 
 namespace monster_hub {
 
+struct Matrix;
+
 void initRenderer();
 void destroyRenderer();
 
-void setProjection(const float* projection);
+void setProjection(const Matrix& projection);
 
 void beginRendering();
 void endRendering();
