@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "debug/assert.h"
+#include "math/vec2.h"
 #include "util/unreachable.h"
 
 namespace monster_hub {
@@ -350,15 +351,14 @@ bool isKeyReleased(Key key)
     return isKeyUp(key) && (keyState[key] & previous_state_bit);
 }
 
-void getCursorPos(float& x, float& y)
+Vec2 getCursorPos()
 {
     assert(window != nullptr);
 
     double posX, posY;
     glfwGetCursorPos(window, &posX, &posY);
 
-    x = static_cast<float>(posX);
-    y = static_cast<float>(posY);
+    return { static_cast<float>(posX), static_cast<float>(posY) };
 }
 
 bool isMouseButtonDown(Button button)

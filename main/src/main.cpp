@@ -1,6 +1,7 @@
 #include "input.h"
 #include "io/filesystem.h"
 #include "logging/logger.h"
+#include "math/vec2.h"
 #include "rendering/projection.h"
 #include "rendering/renderer.h"
 #include "window.h"
@@ -23,13 +24,14 @@ int main(int, char* argv[])
     initRenderer();
     setProjection(projection);
 
-    float mouseX, mouseY;
     while (!isWindowClosed())
     {
-        getCursorPos(mouseX, mouseY);
+        Vec2 cursorPos = getCursorPos();
 
         beginRendering();
-        if (isMouseButtonDown(BUTTON_LEFT) && mouseX >= 160 && mouseX <= 480 && mouseY >= 120 && mouseY <= 360)
+        if (isMouseButtonDown(BUTTON_LEFT) &&
+                cursorPos.x >= 160 && cursorPos.x <= 480 &&
+                cursorPos.y >= 120 && cursorPos.y <= 360)
             pushQuad(160, 120, 320, 240, 1, 0, 0, 1);
         else
             pushQuad(160, 120, 320, 240, 0, 0, 1, 1);
