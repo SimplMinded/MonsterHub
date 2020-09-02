@@ -9,7 +9,9 @@
 #include "debug/assert.h"
 #include "input.h"
 #include "math/matrix.h"
+#include "rendering/gl_assert.h"
 #include "rendering/logger.h"
+#include "rendering/texture.h"
 #include "util/unreachable.h"
 #include "window.h"
 
@@ -17,58 +19,11 @@ namespace monster_hub {
 
 namespace {
 
-#if DEBUG_FEATURE_ENABLED(GL_ASSERT)
-
-const char* glErrorToString(GLenum error)
-{
-    switch (error)
-    {
-        case GL_NO_ERROR:
-            return "No error";
-        case GL_INVALID_ENUM:
-            return "Invalid enum";
-        case GL_INVALID_VALUE:
-            return "Invalid value";
-        case GL_INVALID_OPERATION:
-            return "Invalid operation";
-        case GL_INVALID_FRAMEBUFFER_OPERATION:
-            return "Invalid framebuffer operation";
-        case GL_OUT_OF_MEMORY:
-            return "Out of memory";
-        case GL_STACK_UNDERFLOW:
-            return "Stack underflow";
-        case GL_STACK_OVERFLOW:
-            return "Stack overflow";
-        default:
-            unreachable("Unknown OpenGL error");
-    }
-}
-
-void glAssert_impl(const char* file, size_t line, const char* call)
-{
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR)
-    {
-        LOG_ERROR("%s::%lu: %s ( %s )",
-                file, line, glErrorToString(error), call);
-        abort();
-    }
-}
-
-#define GL_ASSERT(call) \
-    while (glGetError() != GL_NO_ERROR); \
-    call; \
-    glAssert_impl(__FILE__, __LINE__, #call)
-
-#else
-
-#define GL_ASSERT(call) call
-
-#endif
-
 struct Vertex
 {
     float x, y;
+    uint32_t textureIndex;
+    float u, v;
     float r, g, b, a;
 };
 
@@ -76,8 +31,12 @@ constexpr const char* vertex_shader_src =
     "#version 400 core\n"
     "\n"
     "layout(location=0) in vec4 in_position;\n"
-    "layout(location=1) in vec4 in_color;\n"
+    "layout(location=1) in uint in_textureIndex;\n"
+    "layout(location=2) in vec2 in_texCoords;\n"
+    "layout(location=3) in vec4 in_color;\n"
     "\n"
+    "flat out uint vertTextureIndex;\n"
+    "out vec2 vertTexCoords;\n"
     "out vec4 vertColor;\n"
     "\n"
     "uniform mat4 u_projection;\n"
@@ -85,19 +44,29 @@ constexpr const char* vertex_shader_src =
     "void main()\n"
     "{\n"
     "    gl_Position = u_projection * in_position;\n"
+    "    vertTextureIndex = in_textureIndex;\n"
+    "    vertTexCoords = in_texCoords;\n"
     "    vertColor = in_color;\n"
     "}\n";
 
 constexpr const char* fragment_shader_src =
     "#version 400 core\n"
     "\n"
+    "flat in uint vertTextureIndex;\n"
+    "in vec2 vertTexCoords;\n"
     "in vec4 vertColor;\n"
     "\n"
     "out vec4 fragColor;\n"
     "\n"
+    "uniform sampler2D[32] u_texture;\n"
+    "\n"
     "void main()\n"
     "{\n"
-    "    fragColor = vertColor;\n"
+    "    if (vertTextureIndex != 0) {\n"
+    "        fragColor = texture(u_texture[vertTextureIndex], vertTexCoords) * vertColor;\n"
+    "    } else {\n"
+    "        fragColor = vertColor;\n"
+    "    }\n"
     "}\n";
 
 uint32_t vao = 0;
@@ -108,6 +77,10 @@ uint32_t program = 0;
 constexpr int32_t max_sprite_count = 10000;
 Vertex vertices[max_sprite_count * 4] = {};
 int32_t spriteCount = 0;
+
+constexpr uint32_t max_texture_count = 32;
+uint32_t textures[max_texture_count] = {};
+uint32_t textureCount = 1;
 
 void pushIndices()
 {
@@ -229,7 +202,15 @@ void initRenderer()
             reinterpret_cast<void*>(offsetof(Vertex, x))) );
 
     GL_ASSERT( glEnableVertexAttribArray(1) );
-    GL_ASSERT( glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(Vertex),
+    GL_ASSERT( glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(Vertex),
+            reinterpret_cast<void*>(offsetof(Vertex, textureIndex))) );
+
+    GL_ASSERT( glEnableVertexAttribArray(2) );
+    GL_ASSERT( glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(Vertex),
+            reinterpret_cast<void*>(offsetof(Vertex, u))) );
+
+    GL_ASSERT( glEnableVertexAttribArray(3) );
+    GL_ASSERT( glVertexAttribPointer(3, 4, GL_FLOAT, false, sizeof(Vertex),
             reinterpret_cast<void*>(offsetof(Vertex, r))) );
 
     pushIndices();
@@ -242,6 +223,13 @@ void initRenderer()
     GL_ASSERT( glDeleteShader(vertexShader) );
     GL_ASSERT( glDeleteShader(fragmentShader) );
     GL_ASSERT( glUseProgram(program) );
+
+    GL_ASSERT( int32_t texturesLocation = glGetUniformLocation(
+                program, "u_texture") );
+    assert(texturesLocation != -1);
+    int32_t samplers[32] = {};
+    for (int32_t i = 0; i < 32; ++i) samplers[i] = i;
+    GL_ASSERT( glUniform1iv(texturesLocation, 32, samplers) );
 }
 
 void destroyRenderer()
@@ -262,12 +250,21 @@ void beginRendering()
 {
     GL_ASSERT( glClear(GL_COLOR_BUFFER_BIT) );
     spriteCount = 0;
+    textureCount = 1;
 }
 
 void endRendering()
 {
+    for (uint32_t i = 1; i < textureCount; ++i)
+    {
+        GL_ASSERT( glActiveTexture(GL_TEXTURE0 + i) );
+        GL_ASSERT( glBindTexture(GL_TEXTURE_2D, textures[i]) );
+    }
+
     GL_ASSERT( glBufferSubData(GL_ARRAY_BUFFER,
-            0, static_cast<uint32_t>(spriteCount * 4) * sizeof(Vertex), vertices) );
+            0,
+            static_cast<uint32_t>(spriteCount * 4) * sizeof(Vertex),
+            vertices) );
     GL_ASSERT( glDrawElements(GL_TRIANGLES, spriteCount * 6, GL_UNSIGNED_INT, 0) );
 
     swapBuffers();
@@ -275,15 +272,48 @@ void endRendering()
 }
 
 void pushQuad(float x, float y, float width, float height,
-        float r, float g, float b, float a)
+        const Texture& texture, float r, float g, float b, float a)
 {
+    assert(width > 0);
+    assert(height > 0);
+    assert(r >= 0 && r <= 1);
+    assert(g >= 0 && g <= 1);
+    assert(b >= 0 && b <= 1);
+    assert(a >= 0 && a <= 1);
     assert(spriteCount < max_sprite_count);
 
-    vertices[spriteCount + 0] = { x,         y,          r, g, b, a };
-    vertices[spriteCount + 1] = { x,         y + height, r, g, b, a };
-    vertices[spriteCount + 2] = { x + width, y + height, r, g, b, a };
-    vertices[spriteCount + 3] = { x + width, y,          r, g, b, a };
+    uint32_t textureIndex = 0;
+    while (textureIndex < textureCount && textures[textureIndex] != texture.id)
+    {
+        textureIndex++;
+    }
+    assert(textureIndex < max_texture_count);
+    if (textureIndex == textureCount)
+    {
+        textures[textureCount++] = texture.id;
+    }
+
+    vertices[(spriteCount * 4) + 0] =
+        { x,         y,          textureIndex, 0, 0, r, g, b, a };
+    vertices[(spriteCount * 4) + 1] =
+        { x,         y + height, textureIndex, 0, 1, r, g, b, a };
+    vertices[(spriteCount * 4) + 2] =
+        { x + width, y + height, textureIndex, 1, 1, r, g, b, a };
+    vertices[(spriteCount * 4) + 3] =
+        { x + width, y,          textureIndex, 1, 0, r, g, b, a };
     spriteCount++;
+}
+
+void pushQuad(float x, float y, float width, float height,
+        const Texture& texture)
+{
+    pushQuad(x, y, width, height, texture, 1, 1, 1, 1);
+}
+
+void pushQuad(float x, float y, float width, float height,
+        float r, float g, float b, float a)
+{
+    pushQuad(x, y, width, height, {}, r, g, b, a);
 }
 
 } // namespace monster_hub

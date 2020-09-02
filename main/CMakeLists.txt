@@ -23,8 +23,10 @@ set(SRC_FILES
     src/logging/logger.cpp
     src/main.cpp
     src/math/vec2.cpp
+    src/rendering/gl_assert.cpp
     src/rendering/projection.cpp
     src/rendering/renderer.cpp
+    src/rendering/texture.cpp
     src/util/unreachable.cpp
     src/window.cpp)
 
