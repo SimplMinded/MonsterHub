@@ -5,6 +5,7 @@
 #include "rendering/color.h"
 #include "rendering/projection.h"
 #include "rendering/renderer.h"
+#include "rendering/spritesheet.h"
 #include "rendering/texture.h"
 #include "rendering/texture_region.h"
 #include "window.h"
@@ -40,57 +41,6 @@ static void createImage0(uint8_t* result)
     setPixel(&result[45 * 4], 0, 0, 255, 255);
 }
 
-static void createImage1(uint8_t* result)
-{
-    for (uint32_t i = 0; i < 6 * 9; ++i)
-    {
-        setPixel(&result[i * 4], 255, 255, 255, 255);
-    }
-
-    setPixel(&result[16 * 4], 0, 0, 255, 255);
-    setPixel(&result[22 * 4], 0, 0, 255, 255);
-    setPixel(&result[34 * 4], 0, 0, 255, 255);
-    setPixel(&result[40 * 4], 0, 0, 255, 255);
-}
-
-static void createImage2(uint8_t* result)
-{
-    for (uint32_t i = 0; i < 6 * 9; ++i)
-    {
-        setPixel(&result[i * 4], 255, 255, 255, 255);
-    }
-
-    setPixel(&result[8 * 4], 0, 0, 255, 255);
-    setPixel(&result[9 * 4], 0, 0, 255, 255);
-    setPixel(&result[13 * 4], 0, 0, 255, 255);
-    setPixel(&result[19 * 4], 0, 0, 255, 255);
-    setPixel(&result[26 * 4], 0, 0, 255, 255);
-    setPixel(&result[27 * 4], 0, 0, 255, 255);
-    setPixel(&result[34 * 4], 0, 0, 255, 255);
-    setPixel(&result[40 * 4], 0, 0, 255, 255);
-    setPixel(&result[44 * 4], 0, 0, 255, 255);
-    setPixel(&result[45 * 4], 0, 0, 255, 255);
-}
-
-static void createImage3(uint8_t* result)
-{
-    for (uint32_t i = 0; i < 6 * 9; ++i)
-    {
-        setPixel(&result[i * 4], 255, 255, 255, 255);
-    }
-
-    setPixel(&result[8 * 4], 0, 0, 255, 255);
-    setPixel(&result[9 * 4], 0, 0, 255, 255);
-    setPixel(&result[16 * 4], 0, 0, 255, 255);
-    setPixel(&result[22 * 4], 0, 0, 255, 255);
-    setPixel(&result[26 * 4], 0, 0, 255, 255);
-    setPixel(&result[27 * 4], 0, 0, 255, 255);
-    setPixel(&result[34 * 4], 0, 0, 255, 255);
-    setPixel(&result[40 * 4], 0, 0, 255, 255);
-    setPixel(&result[44 * 4], 0, 0, 255, 255);
-    setPixel(&result[45 * 4], 0, 0, 255, 255);
-}
-
 int main(int, char* argv[])
 {
     char workingDir[128];
@@ -110,31 +60,18 @@ int main(int, char* argv[])
     createImage0(image0);
     Texture texture0 = createTexture(6, 9, image0);
 
-    uint8_t image1[6 * 9 * 4] = {};
-    createImage1(image1);
-    Texture texture1 = createTexture(6, 9, image1);
-
-    uint8_t image2[6 * 9 * 4] = {};
-    createImage2(image2);
-    Texture texture2 = createTexture(6, 9, image2);
-
-    uint8_t image3[6 * 9 * 4] = {};
-    createImage3(image3);
-    Texture texture3 = createTexture(6, 9, image3);
+    Spritesheet spritesheet = makeSpritesheet(texture0, 3);
 
     while (!isWindowClosed())
     {
         beginRendering();
-        pushQuad(0, 120, 160, 240, makeTextureRegion(texture0));
-        pushQuad(160, 120, 160, 240, makeTextureRegion(texture1));
-        pushQuad(320, 120, 160, 240, makeTextureRegion(texture2));
-        pushQuad(480, 120, 160, 240, makeTextureRegion(texture3));
+        pushQuad(0, 120, 160, 240, spriteAtIndex(spritesheet, 0));
+        pushQuad(160, 120, 160, 240, spriteAtIndex(spritesheet, 1));
+        pushQuad(320, 120, 160, 240, spriteAtIndex(spritesheet, 2));
+        pushQuad(480, 120, 160, 240, spriteAtIndex(spritesheet, 3));
         endRendering();
     }
 
-    destroyTexture(texture3);
-    destroyTexture(texture2);
-    destroyTexture(texture1);
     destroyTexture(texture0);
     destroyRenderer();
     destroyWindow();
