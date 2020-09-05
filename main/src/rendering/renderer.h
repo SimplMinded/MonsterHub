@@ -2,8 +2,9 @@
 
 namespace monster_hub {
 
+struct Color;
 struct Matrix;
-struct Texture;
+struct TextureRegion;
 
 void initRenderer();
 void destroyRenderer();
@@ -14,13 +15,13 @@ void beginRendering();
 void endRendering();
 
 void pushQuad(float x, float y, float width, float height,
-        const Texture& texture, float r, float g, float b, float a);
+        const TextureRegion& textureRegion, const Color& color);
 
 void pushQuad(float x, float y, float width, float height,
-        const Texture& texture);
+        const TextureRegion& textureRegion);
 
 void pushQuad(float x, float y, float width, float height,
-        float r, float g, float b, float a);
+        const Color& color);
 
 } // namespace monster_hub
 

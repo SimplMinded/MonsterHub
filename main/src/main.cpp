@@ -2,9 +2,11 @@
 #include "logging/logger.h"
 #include "math/matrix.h"
 #include "math/vec2.h"
+#include "rendering/color.h"
 #include "rendering/projection.h"
 #include "rendering/renderer.h"
 #include "rendering/texture.h"
+#include "rendering/texture_region.h"
 #include "window.h"
 
 using namespace monster_hub;
@@ -123,10 +125,10 @@ int main(int, char* argv[])
     while (!isWindowClosed())
     {
         beginRendering();
-        pushQuad(0, 120, 160, 240, texture0);
-        pushQuad(160, 120, 160, 240, texture1);
-        pushQuad(320, 120, 160, 240, texture2);
-        pushQuad(480, 120, 160, 240, texture3);
+        pushQuad(0, 120, 160, 240, makeTextureRegion(texture0));
+        pushQuad(160, 120, 160, 240, makeTextureRegion(texture1));
+        pushQuad(320, 120, 160, 240, makeTextureRegion(texture2));
+        pushQuad(480, 120, 160, 240, makeTextureRegion(texture3));
         endRendering();
     }
 

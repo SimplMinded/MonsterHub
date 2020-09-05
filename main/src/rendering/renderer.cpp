@@ -9,9 +9,11 @@
 #include "debug/assert.h"
 #include "input.h"
 #include "math/matrix.h"
+#include "rendering/color.h"
 #include "rendering/gl_assert.h"
 #include "rendering/logger.h"
 #include "rendering/texture.h"
+#include "rendering/texture_region.h"
 #include "util/unreachable.h"
 #include "window.h"
 
@@ -272,48 +274,61 @@ void endRendering()
 }
 
 void pushQuad(float x, float y, float width, float height,
-        const Texture& texture, float r, float g, float b, float a)
+        const TextureRegion& textureRegion, const Color& color)
 {
     assert(width > 0);
     assert(height > 0);
-    assert(r >= 0 && r <= 1);
-    assert(g >= 0 && g <= 1);
-    assert(b >= 0 && b <= 1);
-    assert(a >= 0 && a <= 1);
+    assert(color.r >= 0 && color.r <= 1);
+    assert(color.g >= 0 && color.g <= 1);
+    assert(color.b >= 0 && color.b <= 1);
+    assert(color.a >= 0 && color.a <= 1);
     assert(spriteCount < max_sprite_count);
 
     uint32_t textureIndex = 0;
-    while (textureIndex < textureCount && textures[textureIndex] != texture.id)
+    while (textureIndex < textureCount &&
+            textures[textureIndex] != textureRegion.textureId)
     {
         textureIndex++;
     }
     assert(textureIndex < max_texture_count);
     if (textureIndex == textureCount)
     {
-        textures[textureCount++] = texture.id;
+        textures[textureCount++] = textureRegion.textureId;
     }
 
-    vertices[(spriteCount * 4) + 0] =
-        { x,         y,          textureIndex, 0, 0, r, g, b, a };
-    vertices[(spriteCount * 4) + 1] =
-        { x,         y + height, textureIndex, 0, 1, r, g, b, a };
-    vertices[(spriteCount * 4) + 2] =
-        { x + width, y + height, textureIndex, 1, 1, r, g, b, a };
-    vertices[(spriteCount * 4) + 3] =
-        { x + width, y,          textureIndex, 1, 0, r, g, b, a };
+    vertices[(spriteCount * 4) + 0] = {
+        x, y,
+        textureIndex, textureRegion.u1, textureRegion.v1,
+        color.r, color.g, color.b, color.a
+    };
+    vertices[(spriteCount * 4) + 1] = {
+        x, y + height,
+        textureIndex, textureRegion.u1, textureRegion.v2,
+        color.r, color.g, color.b, color.a
+    };
+    vertices[(spriteCount * 4) + 2] = {
+        x + width, y + height,
+        textureIndex, textureRegion.u2, textureRegion.v2,
+        color.r, color.g, color.b, color.a
+    };
+    vertices[(spriteCount * 4) + 3] = {
+        x + width, y,
+        textureIndex, textureRegion.u2, textureRegion.v1,
+        color.r, color.g, color.b, color.a
+    };
     spriteCount++;
 }
 
 void pushQuad(float x, float y, float width, float height,
-        const Texture& texture)
+        const TextureRegion& textureRegion)
 {
-    pushQuad(x, y, width, height, texture, 1, 1, 1, 1);
+    pushQuad(x, y, width, height, textureRegion, {1, 1, 1, 1});
 }
 
 void pushQuad(float x, float y, float width, float height,
-        float r, float g, float b, float a)
+        const Color& color)
 {
-    pushQuad(x, y, width, height, {}, r, g, b, a);
+    pushQuad(x, y, width, height, {}, color);
 }
 
 } // namespace monster_hub
