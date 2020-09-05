@@ -20,11 +20,13 @@ include_directories(src)
 set(SRC_FILES
     src/debug/assert.cpp
     src/io/filesystem.cpp
+    src/io/image.cpp
     src/logging/logger.cpp
     src/main.cpp
     src/math/vec2.cpp
     src/rendering/color.cpp
     src/rendering/gl_assert.cpp
+    src/rendering/image.cpp
     src/rendering/projection.cpp
     src/rendering/renderer.cpp
     src/rendering/spritesheet.cpp
@@ -45,7 +47,7 @@ endif()
 
 add_executable(monster_hub ${SRC_FILES})
 target_link_libraries(monster_hub
-    PRIVATE glad glfw)
+    PRIVATE glad glfw stb_image)
 
 add_custom_target(run monster_hub
     DEPENDS monster_hub)
