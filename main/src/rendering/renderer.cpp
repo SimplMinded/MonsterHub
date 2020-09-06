@@ -12,6 +12,7 @@
 #include "rendering/color.h"
 #include "rendering/gl_assert.h"
 #include "rendering/logger.h"
+#include "rendering/spritesheet.h"
 #include "rendering/texture.h"
 #include "rendering/texture_region.h"
 #include "util/unreachable.h"
@@ -329,6 +330,36 @@ void pushQuad(float x, float y, float width, float height,
         const Color& color)
 {
     pushQuad(x, y, width, height, {}, color);
+}
+
+void pushText(float x, float y, float lineHeight,
+        const char* text, const Spritesheet& font, const Color& color)
+{
+    assert(lineHeight > 0);
+    assert(text != nullptr);
+    assert(font.textureId != 0);
+    assert(font.textureWidth > 0);
+    assert(font.textureHeight > 0);
+    assert(font.spriteWidth > 0 && font.spriteWidth <= font.textureWidth);
+    assert(font.spriteHeight > 0 && font.spriteHeight <= font.textureHeight);
+    assert(color.r >= 0 && color.r <= 1);
+    assert(color.g >= 0 && color.g <= 1);
+    assert(color.b >= 0 && color.b <= 1);
+    assert(color.a >= 0 && color.a <= 1);
+
+    const float glyphRatio = lineHeight / static_cast<float>(font.spriteHeight);
+    const float charWidth = static_cast<float>(font.spriteWidth) * glyphRatio;
+    for (int32_t i = 0; text[i] != '\0'; ++i)
+    {
+        pushQuad(x + (static_cast<float>(i) * charWidth), y, charWidth,
+                lineHeight, getSpriteAtIndex(font, text[i] - 32), color);
+    }
+}
+
+void pushText(float x, float y, float lineHeight,
+        const char* text, const Spritesheet& font)
+{
+    pushText(x, y, lineHeight, text, font, { 1, 1, 1, 1 });
 }
 
 } // namespace monster_hub

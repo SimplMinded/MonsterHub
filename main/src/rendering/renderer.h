@@ -4,6 +4,7 @@ namespace monster_hub {
 
 struct Color;
 struct Matrix;
+struct Spritesheet;
 struct TextureRegion;
 
 void initRenderer();
@@ -22,6 +23,12 @@ void pushQuad(float x, float y, float width, float height,
 
 void pushQuad(float x, float y, float width, float height,
         const Color& color);
+
+void pushText(float x, float y, float lineHeight,
+        const char* text, const Spritesheet& font, const Color& color);
+
+void pushText(float x, float y, float lineHeight,
+        const char* text, const Spritesheet& font);
 
 } // namespace monster_hub
 

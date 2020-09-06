@@ -6,12 +6,14 @@
 namespace monster_hub {
 
 Spritesheet makeSpritesheet(
-        const Texture& texture, int32_t spriteSizeX, int32_t spriteSizeY)
+        const Texture& texture, int32_t spriteWidth, int32_t spriteHeight)
 {
     return {
         texture.id,
-        texture.width / spriteSizeX,
-        texture.height / spriteSizeY
+        texture.width,
+        texture.height,
+        spriteWidth,
+        spriteHeight
     };
 }
 
@@ -20,24 +22,36 @@ Spritesheet makeSpritesheet(const Texture& texture, int32_t spriteSize)
     return makeSpritesheet(texture, spriteSize, spriteSize);
 }
 
-int32_t spriteCount(const Spritesheet& spritesheet)
+int32_t getSpriteCountX(const Spritesheet& spritesheet)
 {
-    return spritesheet.spriteCountX * spritesheet.spriteCountY;
+    return spritesheet.textureWidth / spritesheet.spriteWidth;
 }
 
-TextureRegion spriteAtIndex(const Spritesheet& spritesheet, int32_t index)
+int32_t getSpriteCountY(const Spritesheet& spritesheet)
 {
-    const int32_t xIndex = index % spritesheet.spriteCountX;
-    const int32_t yIndex = index / spritesheet.spriteCountX;
+    return spritesheet.textureHeight / spritesheet.spriteHeight;
+}
+
+int32_t getSpriteCount(const Spritesheet& spritesheet)
+{
+    return getSpriteCountX(spritesheet) * getSpriteCountY(spritesheet);
+}
+
+TextureRegion getSpriteAtIndex(const Spritesheet& spritesheet, int32_t index)
+{
+    const int32_t xIndex = index % getSpriteCountX(spritesheet);
+    const int32_t yIndex = index / getSpriteCountX(spritesheet);
 
     return {
         spritesheet.textureId,
-        static_cast<float>(xIndex) / static_cast<float>(spritesheet.spriteCountX),
-        static_cast<float>(yIndex) / static_cast<float>(spritesheet.spriteCountY),
-        static_cast<float>(xIndex + 1) /
-            static_cast<float>(spritesheet.spriteCountX),
-        static_cast<float>(yIndex + 1) /
-            static_cast<float>(spritesheet.spriteCountY)
+        static_cast<float>(xIndex * spritesheet.spriteWidth) / 
+            static_cast<float>(spritesheet.textureWidth),
+        1 - (static_cast<float>((yIndex + 1) * spritesheet.spriteHeight) /
+            static_cast<float>(spritesheet.textureHeight)),
+        static_cast<float>((xIndex + 1) * spritesheet.spriteWidth) /
+            static_cast<float>(spritesheet.textureWidth),
+        1 - (static_cast<float>(yIndex * spritesheet.spriteHeight) /
+            static_cast<float>(spritesheet.textureHeight))
     };
 }
 

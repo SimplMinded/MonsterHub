@@ -4,6 +4,7 @@
 
 #include "debug/assert.h"
 #include "rendering/gl_assert.h"
+#include "rendering/image.h"
 
 namespace monster_hub {
 
@@ -35,6 +36,11 @@ Texture createTexture(int32_t width, int32_t height, uint8_t* pixels)
             pixels) );
 
     return { width, height, textureId };
+}
+
+Texture createTexture(const Image& image)
+{
+    return createTexture(image.width, image.height, image.data);
 }
 
 void destroyTexture(Texture& texture)

@@ -13,6 +13,8 @@ Image loadImage(const char* path)
 {
     assert(path != nullptr);
 
+    stbi_set_flip_vertically_on_load(true);
+
     int32_t width;
     int32_t height;
     int32_t channelCount;

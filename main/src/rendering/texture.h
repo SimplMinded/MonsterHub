@@ -4,6 +4,8 @@
 
 namespace monster_hub {
 
+struct Image;
+
 struct Texture
 {
     int32_t width = 0;
@@ -12,6 +14,8 @@ struct Texture
 };
 
 Texture createTexture(int32_t width, int32_t height, uint8_t* pixels);
+Texture createTexture(const Image& image);
+
 void destroyTexture(Texture& texture);
 
 } // namespace monster_hub

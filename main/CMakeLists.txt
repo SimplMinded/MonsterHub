@@ -25,6 +25,7 @@ set(SRC_FILES
     src/main.cpp
     src/math/vec2.cpp
     src/rendering/color.cpp
+    src/rendering/font.cpp
     src/rendering/gl_assert.cpp
     src/rendering/image.cpp
     src/rendering/projection.cpp
@@ -48,6 +49,12 @@ endif()
 add_executable(monster_hub ${SRC_FILES})
 target_link_libraries(monster_hub
     PRIVATE glad glfw stb_image)
+
+add_custom_target(copy_res
+    cp -r "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res")
+
+add_custom_target(publish_monster_hub
+    DEPENDS monster_hub copy_res)
 
 add_custom_target(run monster_hub
     DEPENDS monster_hub)
