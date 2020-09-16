@@ -19,6 +19,7 @@ include_directories(src)
 
 set(SRC_FILES
     src/debug/assert.cpp
+    src/debug/statistics.cpp
     src/io/filesystem.cpp
     src/io/image.cpp
     src/logging/logger.cpp

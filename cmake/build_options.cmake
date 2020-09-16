@@ -42,3 +42,12 @@ add_compile_switch(
     DEBUG_FEATURE_SHADER_VERIFICATION_ENABLED "Enable shader verification" ON
     "Release")
 
+add_compile_switch(
+    DEBUG_FEATURE_STATISTICS_ENABLED "Enable statistics collection" ON
+    "Release")
+
+add_compile_switch(
+    DEBUG_OPTION_GLOBAL_COUNTER_ENABLED "Enable collection of global data" ON)
+add_compile_switch(
+    DEBUG_OPTION_FRAME_COUNTER_ENABLED "Enable collection of frame data" ON)
+
