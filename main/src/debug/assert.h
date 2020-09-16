@@ -6,13 +6,12 @@
 
 namespace monster_hub {
 
-void assert_impl(
-        bool exprValue, const char* expr, const char* file, uint64_t line);
+void assert_impl(const char* expr, const char* file, uint64_t line);
 
 #if DEBUG_FEATURE_ENABLED(ASSERT)
 
 #define assert(expr) \
-    monster_hub::assert_impl((expr), #expr, __FILE__, __LINE__)
+    if (!(expr)) monster_hub::assert_impl(#expr, __FILE__, __LINE__)
 
 #else
 
