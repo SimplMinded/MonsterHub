@@ -18,6 +18,7 @@ enum SeverityLevel
 
 enum LogChannel
 {
+    CHANNEL_DEBUG,
     CHANNEL_RENDERING,
     CHANNEL_COUNT
 };
