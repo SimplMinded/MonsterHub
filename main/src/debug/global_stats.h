@@ -34,21 +34,29 @@ const char* getGlobalCounterNameF_impl(GlobalCounterFltId id);
 uint64_t& getGlobalCounterI_impl(GlobalCounterIntId id);
 double& getGlobalCounterF_impl(GlobalCounterFltId id);
 
-#define GLOBAL_COUNTER_NAME_I(id) \
-    getGlobalCounterNameI_impl(GLOBAL_COUNTER_I_##id)
-#define GLOBAL_COUNTER_NAME_F(id) \
-    getGlobalCounterNameF_impl(GLOBAL_COUNTER_F_##id)
+#define PUSH_TO_GLOBAL_COUNTER_I(id, val) \
+    (getGlobalCounterI_impl(GLOBAL_COUNTER_I_##id) += val)
+#define PUSH_TO_GLOBAL_COUNTER_F(id, val) \
+    (getGlobalCounterF_impl(GLOBAL_COUNTER_F_##id) += val)
 
-#define GLOBAL_COUNTER_I(id) getGlobalCounterI_impl(GLOBAL_COUNTER_I_##id)
-#define GLOBAL_COUNTER_F(id) getGlobalCounterF_impl(GLOBAL_COUNTER_F_##id)
+#define GET_GLOBAL_COUNTER_I(id) getGlobalCounterI_impl(GLOBAL_COUNTER_I_##id)
+#define GET_GLOBAL_COUNTER_F(id) getGlobalCounterF_impl(GLOBAL_COUNTER_I_##id)
+
+#define GET_GLOBAL_COUNTER_NAME_I(id) \
+    getGlobalCounterNameI_impl(GLOBAL_COUNTER_I_##id)
+#define GET_GLOBAL_COUNTER_NAME_F(id) \
+    getGlobalCounterNameF_impl(GLOBAL_COUNTER_F_##id)
 
 #else
 
-#define GLOBAL_COUNTER_NAME_I(id)
-#define GLOBAL_COUNTER_NAME_F(id)
+#define PUSH_TO_GLOBAL_COUNTER_I(id, val)
+#define PUSH_TO_GLOBAL_COUNTER(id, val)
 
-#define GLOBAL_COUNTER_I(id)
-#define GLOBAL_COUNTER_F(id)
+#define GET_GLOBAL_COUNTER_I(id)
+#define GET_GLOBAL_COUNTER_F(id)
+
+#define GET_GLOBAL_COUNTER_NAME_I(id)
+#define GET_GLOBAL_COUNTER_NAME_F(id)
 
 #endif
 

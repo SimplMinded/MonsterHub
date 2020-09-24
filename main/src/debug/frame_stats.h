@@ -60,31 +60,41 @@ double getCounterAt(const FrameStatsFlt& stats, size_t index);
 
 FrameStatsFlt getFrameStatsF_impl(FrameCounterFltId id);
 
-#define FRAME_COUNTER_NAME_I(id) getFrameCounterNameI_impl(FRAME_COUNTER_I_##id)
-#define FRAME_COUNTER_NAME_F(id) getFrameCounterNameF_impl(FRAME_COUNTER_F_##id)
+#define PUSH_TO_FRAME_COUNTER_I(id, val) \
+    (getFrameCounterI_impl(FRAME_COUNTER_I_##id) += val)
+#define PUSH_TO_FRAME_COUNTER_F(id, val) \
+    (getFrameCounterF_impl(FRAME_COUNTER_F_##id) += val)
 
-#define FRAME_COUNTER_I(id) getFrameCounterI_impl(FRAME_COUNTER_I_##id)
-#define FRAME_COUNTER_F(id) getFrameCounterF_impl(FRAME_COUNTER_F_##id)
+#define GET_FRAME_COUNTER_I(id) getFrameCounterI_impl(FRAME_COUNTER_I_##id)
+#define GET_FRAME_COUNTER_F(id) getFrameCounterF_impl(FRAME_COUNTER_F_##id)
+
+#define GET_FRAME_COUNTER_NAME_I(id) \
+    getFrameCounterNameI_impl(FRAME_COUNTER_I_##id)
+#define GET_FRAME_COUNTER_NAME_F(id) \
+    getFrameCounterNameF_impl(FRAME_COUNTER_F_##id)
 
 #define UPDATE_FRAME_STATS() updateFrameStats_impl()
-#define CURRENT_FRAME() getCurrentFrame_impl()
+#define GET_CURRENT_FRAME() getCurrentFrame_impl()
 
-#define FRAME_STATS_I(id) getFrameStatsI_impl(FRAME_COUNTER_I_##id)
-#define FRAME_STATS_F(id) getFrameStatsF_impl(FRAME_COUNTER_F_##id)
+#define GET_FRAME_STATS_I(id) getFrameStatsI_impl(FRAME_COUNTER_I_##id)
+#define GET_FRAME_STATS_F(id) getFrameStatsF_impl(FRAME_COUNTER_F_##id)
 
 #else
 
-#define FRAME_COUNTER_NAME_I(id)
-#define FRAME_COUNTER_NAME_F(id)
+#define PUSH_TO_FRAME_COUNTER_I(id, val)
+#define PUSH_TO_FRAME_COUNTER_F(id, val)
 
-#define FRAME_COUNTER_I(id)
-#define FRAME_COUNTER_F(id)
+#define GET_FRAME_COUNTER_I(id)
+#define GET_FRAME_COUNTER_F(id)
+
+#define GET_FRAME_COUNTER_NAME_I(id)
+#define GET_FRAME_COUNTER_NAME_F(id)
 
 #define UPDATE_FRAME_STATS()
-#define CURRENT_FRAME()
+#define GET_CURRENT_FRAME()
 
-#define FRAME_STATS_I(id)
-#define FRAME_STATS_F(id)
+#define GET_FRAME_STATS_I(id)
+#define GET_FRAME_STATS_F(id)
 
 #endif
 

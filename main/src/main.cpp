@@ -19,6 +19,41 @@
 
 using namespace monster_hub;
 
+#if DEBUG_FEATURE_ENABLED(STATISTICS)
+
+void drawStats(const Spritesheet& font)
+{
+    char global[128] = {};
+    snprintf(global, 128, "%s: %lu",
+            GET_GLOBAL_COUNTER_NAME_I(DEBUG), GET_GLOBAL_COUNTER_I(DEBUG));
+    pushText(0, 0, 25, global, font);
+
+    char frame[128] = {};
+    snprintf(frame, 128, "%s: %lu",
+            GET_FRAME_COUNTER_NAME_I(DEBUG), GET_FRAME_COUNTER_I(DEBUG));
+    pushText(0, 25, 25, frame, font);
+
+    FrameStatsInt stats = GET_FRAME_STATS_I(DEBUG);
+    for (uint32_t i = 0; i < 10; ++i)
+    {
+        size_t index = GET_CURRENT_FRAME() > 10 ?
+            (GET_CURRENT_FRAME() - 10 + i) % frame_counter_capacity :
+            i;
+
+        char frames[128] = {};
+        snprintf(frames, 128, "Frame %u: %lu", 10 - i, getCounterAt(stats, index));
+        pushText(0, static_cast<float>(25 * (i + 2)), 25, frames, font);
+    }
+}
+
+#define DRAW_STATS(font) drawStats(font)
+
+#else
+
+#define DRAW_STATS(font)
+
+#endif
+
 int main(int, char* argv[])
 {
     char workingDir[128];
@@ -38,30 +73,12 @@ int main(int, char* argv[])
 
     while (!isWindowClosed())
     {
-        GLOBAL_COUNTER_I(DEBUG)++;
+        PUSH_TO_GLOBAL_COUNTER_I(DEBUG, 1);
+        PUSH_TO_FRAME_COUNTER_I(DEBUG, GET_CURRENT_FRAME());
 
         beginRendering();
 
-        char global[128] = {};
-        snprintf(global, 128, "%s: %lu", GLOBAL_COUNTER_NAME_I(DEBUG), GLOBAL_COUNTER_I(DEBUG));
-        pushText(0, 0, 25, global, font);
-
-        FRAME_COUNTER_I(DEBUG) = CURRENT_FRAME();
-        char frame[128] = {};
-        snprintf(frame, 128, "%s: %lu", FRAME_COUNTER_NAME_I(DEBUG), FRAME_COUNTER_I(DEBUG));
-        pushText(0, 25, 25, frame, font);
-
-        FrameStatsInt stats = FRAME_STATS_I(DEBUG);
-        for (uint32_t i = 0; i < 10; ++i)
-        {
-            size_t index = CURRENT_FRAME() > 10 ?
-                (CURRENT_FRAME() - 10 + i) % frame_counter_capacity :
-                i;
-
-            char frames[128] = {};
-            snprintf(frames, 128, "Frame %u: %lu", 10 - i, getCounterAt(stats, index));
-            pushText(0, static_cast<float>(25 * (i + 2)), 25, frames, font);
-        }
+        DRAW_STATS(font);
 
         endRendering();
 
